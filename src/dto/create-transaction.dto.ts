@@ -1,6 +1,6 @@
-export interface CreateTransactionDTO {
+export class CreateTransactionDTO {
    title: string;
    price: number;
    category: string; 
-   type: string;
-}    
+   type: string; 
+ }
