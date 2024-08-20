@@ -8,19 +8,19 @@ export class AppService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async createTransaction(data: CreateTransactionDTO) {
+    console.log('Received data for creation:', data);
     const createdTransaction = await this.prismaService.transaction.create({
       data: {
         title: data.title,
         price: data.price,
-        category: data.category, 
-        type: data.price >= 0 ? 'entry' : 'outcome', 
-        updatedAt: new Date().toISOString(),
+        category: data.category,
+        type: data.type,
       },
     });
-
+    console.log('Created transaction:', createdTransaction);
     return createdTransaction;
   }
-
+  
   async getTransaction() {
     const transactions = await this.prismaService.transaction.findMany({
       orderBy: {
@@ -53,8 +53,7 @@ export class AppService {
         title: data.title,
         price: data.price,
         category: data.category,
-        type: data.price >= 0 ? 'entry' : 'outcome', 
-        updatedAt: new Date().toISOString(),
+        type: data.type,
       },
     });
 
@@ -62,11 +61,11 @@ export class AppService {
   }
 
   async deleteTransaction(id: string) {
-    const transaction = await this.getTransactionById(id);
+    await this.getTransactionById(id);
 
     const deletedTransaction = await this.prismaService.transaction.delete({
       where: {
-        id: transaction.id,
+        id: id,
       },
     });
 
@@ -80,28 +79,26 @@ export class AppService {
       },
     });
 
-    const entries = transactions.reduce((group, item) => {
-      if (item.type === 'entry') {
-        group += item.price;
+    const entries = transactions.reduce((total, item) => {
+      if (item.type === 'entrada') {
+        total += item.price;
       }
-      return group;
+      return total;
     }, 0);
 
-    const outcomes = transactions.reduce((group, item) => {
-      if (item.type === 'outcome') {
-        group -= item.price;
+    const outcomes = transactions.reduce((total, item) => {
+      if (item.type === 'saida') {
+        total -= item.price;
       }
-      return group;
+      return total;
     }, 0);
 
-    const total = entries - outcomes;
+    const total = entries + outcomes;
 
-    const dashboard = {
-      entry: entries,
-      outcome: outcomes,
+    return {
+      entrada: entries,
+      saida: outcomes,
       total: total,
     };
-
-    return dashboard;
   }
 }

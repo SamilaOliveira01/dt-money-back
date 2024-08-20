@@ -10,17 +10,19 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = "postgresql://postgres:root@localhost:5432/dtmoney"
+  url = "postgresql://myuser:mypassword@localhost:5432/mydb"
+
 }
 
 model Transaction {
-  id        String   @id @default(uuid())
-  title     String
-  price     Float
-  type      String
-  category  String
-  date      DateTime @default(now())
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  id         String   @id @default(uuid())
+  title      String
+  price      Float
+  type       String
+  category   String
+  date       DateTime @default(now())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
   @@map("transactions")
 }
